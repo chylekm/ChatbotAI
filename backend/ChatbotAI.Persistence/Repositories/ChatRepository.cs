@@ -38,9 +38,17 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         return await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
     }
     
-    public Task UpdateMessageTextAsync(Guid messageId, string newText, bool isPartial, CancellationToken cancellationToken)
-    { 
-        throw new NotImplementedException();
+    public async Task UpdateMessageTextAsync(Guid messageId, string newText, bool isPartial, CancellationToken cancellationToken)
+    {
+        var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
+
+        if (message is null)
+            throw new InvalidOperationException($"Message with ID {messageId} not found.");
+
+        message.Text = newText;
+        message.IsPartial = isPartial;
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<List<Message>> GetMessagesByConversationIdAsync(Guid conversationId, CancellationToken cancellationToken)

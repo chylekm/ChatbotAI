@@ -8,18 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChatbotAI.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/chat")]
 public class ChatController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IChatRepository _repository;
-    private readonly IAiResponder _aiResponder;
 
-    public ChatController(IMediator mediator, IChatRepository repository, IAiResponder aiResponder)
+    public ChatController(IMediator mediator)
     {
         _mediator = mediator;
-        _repository = repository;
-        _aiResponder = aiResponder;
     }
     
     [HttpGet("stream")]

@@ -16,10 +16,10 @@ public class RateAiMessageCommandHandler : IRequestHandler<RateAiMessageCommand>
     public async Task<Unit> Handle(RateAiMessageCommand request, CancellationToken cancellationToken)
     { 
         var message = await _repository.GetMessageByIdAsync(request.MessageId, cancellationToken);
+       
+        if (message is null)
+            throw new InvalidOperationException($"Message with ID {request.MessageId} not found.");
 
-       // if (message == null)
-          //  throw new NotFoundException("Message not found");
- 
         if (message.Role != MessageRole.AI)
             throw new InvalidOperationException("Only AI responses can be rated");
         
