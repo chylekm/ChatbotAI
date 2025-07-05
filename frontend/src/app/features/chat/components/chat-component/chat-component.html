@@ -1,0 +1,37 @@
+<div class="chat-window">
+    <div #historyContainer class="chat-history">
+        <div *ngFor="let msg of messages" class="message" [ngClass]="msg.role === userRole.User ? 'user' : 'bot'">
+            <mat-card>{{ msg.text }}
+                <div *ngIf="msg.role === 'bot'" class="rating">
+                    <button mat-icon-button (click)="rateMessage(msg, rating.Up)"
+                        [color]="msg.rating === rating.Up ? 'primary' : undefined">
+                        <mat-icon>thumb_up</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="rateMessage(msg, rating.Down)"
+                        [color]="msg.rating === rating.Down ? 'warn' : undefined">
+                        <mat-icon>thumb_down</mat-icon>
+                    </button>
+                </div>
+            </mat-card>
+        </div>
+        <div *ngIf="botIsTyping" class="message bot typing">
+            <mat-card><em>Bot pisze...</em></mat-card>
+        </div>
+    </div>
+
+    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="chat-input">
+        <div class="message-input">
+            <mat-form-field appearance="fill">
+                <input matInput formControlName="message" placeholder="Wpisz wiadomość..." autocomplete="off" />
+            </mat-form-field>
+        </div>
+
+        <button mat-icon-button color="primary" type="submit" [disabled]="chatForm.invalid">
+            <mat-icon>send</mat-icon>
+        </button>
+
+        <button mat-button color="warn" type="button" *ngIf="botIsTyping" (click)="cancelGeneration()">
+            Anuluj
+        </button>
+    </form>
+</div>
