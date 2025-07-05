@@ -24,3 +24,11 @@ backend/ChatbotAI.Persistence/bin/
 backend/ChatbotAI.Persistence/obj/
 
 backend/ChatbotAI.API/obj/
+
+frontend/.angular/
+
+frontend/node_modules/
+
+obj/
+
+backend/ChatbotAI.sln.DotSettings.user
