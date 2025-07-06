@@ -1,8 +1,8 @@
+using ChatbotAI.Domain.Common;
+
 namespace ChatbotAI.Domain.Entities;
 
-public class Conversation
+public class Conversation : BaseEntity
 {
-    public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; }
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }

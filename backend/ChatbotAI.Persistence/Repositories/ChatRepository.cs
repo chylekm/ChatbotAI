@@ -23,8 +23,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         {
             ConversationId = conversationId,
             Role = role,
-            Text = text,
-            Timestamp = DateTime.UtcNow,
+            Text = text, 
             IsPartial = isPartial
         };
 
@@ -49,14 +48,6 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         message.IsPartial = isPartial;
 
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task<List<Message>> GetMessagesByConversationIdAsync(Guid conversationId, CancellationToken cancellationToken)
-    {
-        return await _context.Messages
-            .Where(m => m.ConversationId == conversationId)
-            .OrderBy(m => m.Timestamp)
-            .ToListAsync(cancellationToken);
     }
     
     public async Task UpdateMessageRatingAsync(Guid messageId, int? rating, CancellationToken cancellationToken)

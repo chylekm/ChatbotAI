@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using ChatbotAI.Domain.Common;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ChatbotAI.Domain.Entities;
 
@@ -33,9 +34,7 @@ public class AppDbContext : DbContext
             builder.HasKey(m => m.Id);
 
             builder.Property(m => m.Text).IsRequired()
-                .HasMaxLength(500);
-
-            builder.Property(m => m.Timestamp).IsRequired();
+                .HasMaxLength(500); 
 
             builder.Property(m => m.Role)
                 .HasMaxLength(10)
@@ -52,5 +51,20 @@ public class AppDbContext : DbContext
         });
 
         base.OnModelCreating(modelBuilder);
+    }
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.CreatedAt == default)
+            {
+                entry.Entity.CreatedAt = now;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
