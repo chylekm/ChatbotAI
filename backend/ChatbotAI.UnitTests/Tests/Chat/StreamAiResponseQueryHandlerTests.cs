@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using ChatbotAI.Application.Interfaces;
-using ChatbotAI.Application.Queries.StreamAiResponse;
+using ChatbotAI.Application.Queries.Chat.StreamAiResponse;
 using ChatbotAI.Domain.Entities;
 using ChatbotAI.Domain.Enums;
 using FluentValidation;

@@ -12,4 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChatbotAI.Domain\ChatbotAI.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Queries\Chat\" />
+  </ItemGroup>
 </Project>

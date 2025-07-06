@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ChatbotAI.Application.Queries.StreamAiResponse;
+namespace ChatbotAI.Application.Queries.Chat.StreamAiResponse;
 
 public class StreamAiResponseQueryValidator : AbstractValidator<StreamAiResponseQuery>
 {

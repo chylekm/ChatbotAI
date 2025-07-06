@@ -1,7 +1,7 @@
 using ChatbotAI.API.Contracts.Chat;
 using ChatbotAI.Application.Commands.Chat.RateAiMessage;
 using ChatbotAI.Application.Interfaces;
-using ChatbotAI.Application.Queries.StreamAiResponse;
+using ChatbotAI.Application.Queries.Chat.StreamAiResponse;
 using ChatbotAI.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

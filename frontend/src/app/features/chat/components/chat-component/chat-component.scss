@@ -30,6 +30,10 @@
           font-style: italic;
         }
       }
+
+      span p {
+        margin-bottom: 0;
+      }
     }
 
     .rate-buttons {
@@ -42,6 +46,10 @@
         box-shadow: none;
       }
     }
+  }
+
+  mat-divider {
+    border-top-color: #CACCD1;
   }
 
   form {
@@ -60,4 +68,16 @@
 
 ::ng-deep .mat-mdc-form-field-bottom-align {
   display: none;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  color: #CACCD1;  
+}
+
+::ng-deep .mat-mdc-floating-label {
+  color: #A2A5AD !important;  
+}
+
+::ng-deep .mat-mdc-form-field-outline {
+  stroke: #CACCD1;  
 }

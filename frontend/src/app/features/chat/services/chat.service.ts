@@ -4,7 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class ApiService {
+export class ChatService {
 
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/chat`;
@@ -22,9 +22,8 @@ export class ApiService {
 
       this.sendStreamRequest(message, conversationId, controller.signal)
         .then(response => this.readStream(response, observer))
-        .catch(error => observer.error(error));
-
-      // funkcja czyszcząca: wywoływana przy unsubscribe
+        .catch(error => observer.error(error)); 
+        
       return () => controller.abort();
     });
   }
