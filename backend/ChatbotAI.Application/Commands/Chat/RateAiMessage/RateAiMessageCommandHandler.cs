@@ -1,5 +1,6 @@
 using ChatbotAI.Application.Interfaces;
 using ChatbotAI.Domain.Enums;
+using FluentValidation;
 using MediatR;
 
 namespace ChatbotAI.Application.Commands.Chat.RateAiMessage;
@@ -7,14 +8,20 @@ namespace ChatbotAI.Application.Commands.Chat.RateAiMessage;
 public class RateAiMessageCommandHandler : IRequestHandler<RateAiMessageCommand>
 {
     private readonly IChatRepository _repository;
-
-    public RateAiMessageCommandHandler(IChatRepository repository)
+    private readonly IValidator<RateAiMessageCommand> _validator;
+    
+    public RateAiMessageCommandHandler(IChatRepository repository, IValidator<RateAiMessageCommand> validator)
     {
         _repository = repository;
+        _validator = validator;
     }
 
     public async Task<Unit> Handle(RateAiMessageCommand request, CancellationToken cancellationToken)
     { 
+        var result = await _validator.ValidateAsync(request, cancellationToken);
+        if (!result.IsValid)
+            throw new ValidationException(result.Errors);
+        
         var message = await _repository.GetMessageByIdAsync(request.MessageId, cancellationToken);
        
         if (message is null)

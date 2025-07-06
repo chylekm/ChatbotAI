@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using ChatbotAI.Application.Interfaces;
 using ChatbotAI.Domain.Enums;
+using FluentValidation;
 using MediatR;
 
 namespace ChatbotAI.Application.Queries.StreamAiResponse;
@@ -9,17 +10,28 @@ public class StreamAiResponseQueryHandler : IRequestHandler<StreamAiResponseQuer
 {
     private readonly IChatRepository _repository;
     private readonly IAiResponder _aiResponder;
+    private readonly IValidator<StreamAiResponseQuery> _validator;
 
-    public StreamAiResponseQueryHandler(IChatRepository repository, IAiResponder aiResponder)
+    public StreamAiResponseQueryHandler(
+        IChatRepository repository,
+        IAiResponder aiResponder,
+        IValidator<StreamAiResponseQuery> validator)
     {
         _repository = repository;
         _aiResponder = aiResponder;
+        _validator = validator;
     }
 
-    public Task<(Guid messageId, IAsyncEnumerable<string> stream)> Handle(StreamAiResponseQuery request, CancellationToken cancellationToken)
+
+    public async Task<(Guid messageId, IAsyncEnumerable<string> stream)> Handle(StreamAiResponseQuery request, CancellationToken cancellationToken)
     {
-        return GenerateStream(request.Message, request.ConversationId, cancellationToken);
+        var result = await _validator.ValidateAsync(request, cancellationToken);
+        if (!result.IsValid)
+            throw new ValidationException(result.Errors);
+
+        return await GenerateStream(request.Message, request.ConversationId, cancellationToken);
     }
+
 
     private async Task<(Guid messageId, IAsyncEnumerable<string> stream)> GenerateStream(string message, Guid? conversationId, CancellationToken cancellationToken)
     {

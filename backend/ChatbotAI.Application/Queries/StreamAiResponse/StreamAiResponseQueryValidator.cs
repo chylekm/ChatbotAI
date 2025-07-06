@@ -9,7 +9,7 @@ public class StreamAiResponseQueryValidator : AbstractValidator<StreamAiResponse
         RuleFor(x => x.Message)
             .NotEmpty()
             .WithMessage("Message cannot be empty.")
-            .MaximumLength(1000)
+            .MaximumLength(500)
             .WithMessage("Message is too long.");
 
         RuleFor(x => x.ConversationId)

@@ -32,11 +32,13 @@ public class AppDbContext : DbContext
         {
             builder.HasKey(m => m.Id);
 
-            builder.Property(m => m.Text).IsRequired();
+            builder.Property(m => m.Text).IsRequired()
+                .HasMaxLength(500);
 
             builder.Property(m => m.Timestamp).IsRequired();
 
             builder.Property(m => m.Role)
+                .HasMaxLength(10)
                 .HasConversion<string>()
                 .IsRequired();
 

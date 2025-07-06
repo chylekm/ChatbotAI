@@ -9,9 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 import { SHARED_MATERIAL_IMPORTS } from '../../../../shared/shared-material';
-import { Rating } from '../../enums/rating.enum';
 import { MessageRole } from '../../enums/message-role';
 import { Message } from '../../models/message.interface';
 import { ChatService } from '../../services/chat.service';
@@ -39,14 +37,13 @@ export class ChatComponent {
   readonly loading = signal(false);
 
   readonly messageRole = MessageRole;
-  readonly rating = Rating;
 
   aiStreamSubscription?: Subscription;
   currentStream = signal('');
   aiMessageId?: string;
 
   form = new FormGroup({
-    message: new FormControl('', [Validators.required, Validators.maxLength(2000)])
+    message: new FormControl('', [Validators.required ])
   });
 
   ngOnInit(): void {

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatbotAI.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatbotAI.Persistence", "ChatbotAI.Persistence\ChatbotAI.Persistence.csproj", "{3BFFD23B-1FBC-4520-B83B-4E56766D0726}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatbotAI.UnitTests", "ChatbotAI.UnitTests\ChatbotAI.UnitTests.csproj", "{06ADC236-777C-4260-A800-99B6807E7180}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{3BFFD23B-1FBC-4520-B83B-4E56766D0726}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BFFD23B-1FBC-4520-B83B-4E56766D0726}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BFFD23B-1FBC-4520-B83B-4E56766D0726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06ADC236-777C-4260-A800-99B6807E7180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06ADC236-777C-4260-A800-99B6807E7180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06ADC236-777C-4260-A800-99B6807E7180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06ADC236-777C-4260-A800-99B6807E7180}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
