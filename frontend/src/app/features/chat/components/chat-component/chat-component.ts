@@ -43,6 +43,7 @@ export class ChatComponent {
 
   aiStreamSubscription?: Subscription;
   currentStream = signal('');
+  aiMessageId?: string;
 
   form = new FormGroup({
     message: new FormControl('', [Validators.required, Validators.maxLength(2000)])
@@ -59,9 +60,19 @@ export class ChatComponent {
   }
 
   rate(message: Message, value: number): void {
-    message.rating = value;
+    if (!message.id || message.role !== MessageRole.AI) return;
+
+    const newRating = message.rating === value ? null : value;
+    message.rating = newRating;
     this.messages.set([...this.messages()]);
-    // TODO: api/chat/rate
+
+    this.chatService.patchRating(message.id, newRating ?? 0).subscribe({
+      error: () => {
+        message.rating = null;
+        this.messages.set([...this.messages()]);
+        console.error('Rating failed.');
+      }
+    });
   }
 
   sendMessage(): void {
@@ -86,7 +97,21 @@ export class ChatComponent {
     this.messages.update(msgs => [...msgs, aiMessage]);
 
     this.aiStreamSubscription = this.chatService.streamAiResponse(value).subscribe({
-      next: (chunk) => this.updateAiMessage(chunk),
+      next: ({ chunk, messageId }) => {
+        // przypisz ID tylko raz
+        if (messageId && !this.aiMessageId) {
+          this.aiMessageId = messageId;
+          const current = this.messages();
+          const last = current.at(-1);
+          if (last?.role === MessageRole.AI) {
+            last.id = messageId;
+            this.messages.set([...current.slice(0, -1), last]);
+          }
+        }
+
+        // dopisz chunk do odpowiedzi AI
+        this.updateAiMessage(chunk);
+      },
       error: () => this.finalizeAiMessage(),
       complete: () => this.finalizeAiMessage()
     });
@@ -96,16 +121,19 @@ export class ChatComponent {
     this.aiStreamSubscription?.unsubscribe();
     this.finalizeAiMessage();
   }
- 
+
   private updateAiMessage(chunk: string): void {
-    const current = this.messages();
-    const last = current.at(-1);
+    if (!chunk) return;
+
+    const messages = this.messages();
+    const last = messages.at(-1);
 
     if (last?.role === MessageRole.AI && last.isPartial) {
       last.text += chunk;
-      this.messages.set([...current.slice(0, -1), last]);
+      this.messages.set([...messages.slice(0, -1), last]);
     }
   }
+
   private finalizeAiMessage(): void {
     const current = this.messages();
     const last = current.at(-1);
@@ -118,5 +146,6 @@ export class ChatComponent {
     this.loading.set(false);
     this.aiStreamSubscription = undefined;
     this.currentStream.set('');
+    this.aiMessageId = undefined;
   }
 }

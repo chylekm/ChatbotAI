@@ -5,7 +5,7 @@ using MediatR;
 
 namespace ChatbotAI.Application.Queries.StreamAiResponse;
 
-public class StreamAiResponseQueryHandler : IRequestHandler<StreamAiResponseQuery, IAsyncEnumerable<string>>
+public class StreamAiResponseQueryHandler : IRequestHandler<StreamAiResponseQuery, (Guid messageId, IAsyncEnumerable<string> stream)>
 {
     private readonly IChatRepository _repository;
     private readonly IAiResponder _aiResponder;
@@ -16,33 +16,38 @@ public class StreamAiResponseQueryHandler : IRequestHandler<StreamAiResponseQuer
         _aiResponder = aiResponder;
     }
 
-    public Task<IAsyncEnumerable<string>> Handle(StreamAiResponseQuery request, CancellationToken cancellationToken)
+    public Task<(Guid messageId, IAsyncEnumerable<string> stream)> Handle(StreamAiResponseQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(GenerateStream(request.Message, request.ConversationId, cancellationToken));
+        return GenerateStream(request.Message, request.ConversationId, cancellationToken);
     }
 
-    private async IAsyncEnumerable<string> GenerateStream(string message, Guid? conversationId, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private async Task<(Guid messageId, IAsyncEnumerable<string> stream)> GenerateStream(string message, Guid? conversationId, CancellationToken cancellationToken)
     {
         var resolvedConversationId = conversationId ?? (await _repository.CreateConversationAsync(cancellationToken)).Id;
-
+        
         await _repository.AddMessageAsync(resolvedConversationId, MessageRole.User, message, false, cancellationToken);
-
+        
         var aiMessage = await _repository.AddMessageAsync(resolvedConversationId, MessageRole.AI, string.Empty, true, cancellationToken);
-
-        string currentText = string.Empty;
-
-        await foreach (var chunk in _aiResponder.GenerateResponseStreamAsync(message, cancellationToken))
+       
+        async IAsyncEnumerable<string> Stream([EnumeratorCancellation] CancellationToken ct)
         {
-            if (cancellationToken.IsCancellationRequested)
-                yield break;
+            string currentText = string.Empty;
 
-            currentText += chunk;
+            await foreach (var chunk in _aiResponder.GenerateResponseStreamAsync(message, ct))
+            {
+                if (ct.IsCancellationRequested)
+                    yield break;
 
-            await _repository.UpdateMessageTextAsync(aiMessage.Id, currentText, true, cancellationToken);
+                currentText += chunk;
 
-            yield return chunk;
+                await _repository.UpdateMessageTextAsync(aiMessage.Id, currentText, true, ct);
+
+                yield return chunk;
+            }
+
+            await _repository.UpdateMessageTextAsync(aiMessage.Id, currentText, false, ct);
         }
 
-        await _repository.UpdateMessageTextAsync(aiMessage.Id, currentText, false, cancellationToken);
+        return (aiMessage.Id, Stream(cancellationToken));
     }
 }

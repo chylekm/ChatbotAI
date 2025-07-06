@@ -5,6 +5,7 @@ using ChatbotAI.Application.Queries.StreamAiResponse;
 using ChatbotAI.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ChatbotAI.API.Controllers;
 
@@ -20,28 +21,29 @@ public class ChatController : ControllerBase
     }
     
     [HttpPost("stream")]
-    public async Task StreamAiResponse(
-        [FromBody] StreamAiRequest request,
-        CancellationToken cancellationToken)
+    public async Task Stream([FromBody] StreamAiResponseQuery query, CancellationToken cancellationToken)
     {
-        Response.StatusCode = 200;
-        Response.ContentType = "text/plain";
+        var (messageId, stream) = await _mediator.Send(query, cancellationToken);
 
-        var stream = await _mediator.Send(
-            new StreamAiResponseQuery(request.Message, request.ConversationId),
-            cancellationToken);
+        Response.ContentType = "text/event-stream";
+
+        await Response.WriteAsync($"id:{messageId}\n\n", cancellationToken);
+        await Response.Body.FlushAsync(cancellationToken);
 
         await foreach (var chunk in stream.WithCancellation(cancellationToken))
         {
-            await Response.WriteAsync(chunk, cancellationToken: cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+                break;
+
+            await Response.WriteAsync(chunk, cancellationToken);
             await Response.Body.FlushAsync(cancellationToken);
         }
     }
 
-    [HttpPut("rate/{messageId:guid}")]
-    public async Task<IActionResult> RateAiMessage(Guid messageId, [FromBody] int? rating, CancellationToken cancellationToken)
+    [HttpPatch("rate")]
+    public async Task<IActionResult> RateAiMessage([FromBody] RateMessageCommand command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new RateAiMessageCommand(messageId, rating), cancellationToken);
+        await _mediator.Send(new RateAiMessageCommand(command.MessageId, command.Rating), cancellationToken);
         return NoContent();
     }
 }
