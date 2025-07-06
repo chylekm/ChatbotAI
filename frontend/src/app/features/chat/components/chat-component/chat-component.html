@@ -1,19 +1,43 @@
 <div class="chat-container">
-  <div class="messages">
-    <div *ngFor="let message of messages()" [class.user]="message.role === messageRole.User" [class.ai]="message.role === messageRole.AI">
-      {{ message.text }}
-      <span *ngIf="message.role === messageRole.AI">
-        <button (click)="rate(message, 1)">👍</button>
-        <button (click)="rate(message, -1)">👎</button>
-      </span>
-    </div>
-  </div>
-</div>
+  <div class="messages" #messagesContainer>
+    @for (message of messages(); track message.id) {
+    <mat-card [class.user]="message.role === messageRole.User" [class.ai]="message.role === messageRole.AI">
 
-<form [formGroup]="form" (ngSubmit)="sendMessage()" class="input-bar">
-  <input matInput placeholder="Type a message..." formControlName="message" />
-  <button matButton="filled" color="primary" type="submit" [disabled]="loading() || form.invalid">
-    Send
-  </button>
-  <button mat-button color="warn" (click)="cancelGeneration()" *ngIf="loading()">Cancel</button>
-</form> 
+      @if (!message.text || message.text.trim() === '') {
+      <span class="placeholder"><p>Bot is typing...</p></span>
+      } @else {
+      <span [innerHTML]="formatText(message.text)"></span>
+      }
+
+      @if (message.role === messageRole.AI) {
+      <span class="rate-buttons">
+        <button matMiniFab (click)="rate(message, 1)">
+          <mat-icon>{{ message.rating == 1 ? "thumb_up" : "thumb_up_off_alt" }}</mat-icon>
+        </button>
+        <button matMiniFab (click)="rate(message, -1)">
+          <mat-icon>{{ message.rating == -1 ? "thumb_down" : "thumb_down_off_alt" }}</mat-icon>
+        </button>
+      </span>
+      }
+    </mat-card>
+    }
+
+  </div>
+  <mat-divider></mat-divider>
+  <form [formGroup]="form" (ngSubmit)="sendMessage()">
+    <mat-form-field class="example-form-field" appearance="outline">
+      <mat-label>Type a message...</mat-label>
+      <input matInput type="text" formControlName="message">
+      @if (message) {
+      <button matSuffix matIconButton aria-label="Clear" ç>
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+
+    <button matButton="filled" color="primary" type="submit" [disabled]="form.invalid" *ngIf="!loading()">
+      Send
+    </button>
+    <button matButton="tonal" (click)="cancelGeneration()" *ngIf="loading()">Cancel</button>
+  </form>
+</div>

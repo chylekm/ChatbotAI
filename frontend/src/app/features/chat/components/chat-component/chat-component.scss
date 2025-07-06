@@ -1,56 +1,63 @@
-/*.chat-window {
-  max-width: 720px;
-  margin: 0 auto;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  background: #fafafa;
-}
-
-.chat-history {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.message {
-  max-width: 70%;
-}
-
-.message {
-    &.user {
-        align-self: flex-end;
-    }
-
-    &.bot {
-        align-self: flex-start;
-    }
-}
-
-.message mat-card {
-  padding: 0.75rem 1rem;
+.chat-container {
+  width: 600px;
+  background-color: white;
   border-radius: 12px;
-  background-color: #e3f2fd;
-  color: #0d47a1;
-  box-shadow: none;
+
+  .messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    height: 60vh;
+    overflow-y: auto;
+
+    mat-card {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px;
+      max-width: 60%;
+      box-shadow: none;
+
+      &.user {
+        align-self: flex-end;
+        background-color: #BBDEFB;
+      }
+
+      &.ai {
+        background-color: #E3F2FD;
+
+        .placeholder {
+          font-style: italic;
+        }
+      }
+    }
+
+    .rate-buttons {
+      display: flex;
+      gap: 8px;
+
+      button {
+        background-color: #E3F2FD;
+        color: #1976D2;
+        box-shadow: none;
+      }
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: stretch;
+    gap: 10px;
+    padding: 12px 20px;
+
+    mat-form-field {
+      flex: 1;
+    }
+  }
 }
 
-.chat-input {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border-top: 1px solid #ddd;
-  background: white;
+::ng-deep .mat-mdc-form-field-bottom-align {
+  display: none;
 }
-
-.message-input {
-  flex: 1;
-}
-
-mat-form-field {
-  width: 100%;
-}
-*/

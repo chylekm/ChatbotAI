@@ -37,24 +37,21 @@ public class FakeAiResponder : IAiResponder
 
     private string GenerateRandomResponse()
     {
-        int responseType = _random.Next(3);
-
-        int sentenceCount = responseType switch
+        var responseType = _random.Next(3); 
+        var sentenceCount = responseType switch
         {
-            0 => _random.Next(1, 3),
-            1 => _random.Next(3, 6),
-            2 => _random.Next(6, 10),
+            0 => _random.Next(2, 4),  
+            1 => _random.Next(3, 6),  
+            2 => _random.Next(6, 13),   
             _ => 3
         };
 
-        var selectedSentences = Enumerable.Range(0, sentenceCount)
-            .Select(_ => Sentences[_random.Next(Sentences.Length)]);
-        
-        if (sentenceCount > 5)
-        {
-            return string.Join("\n\n", selectedSentences.Chunk(3).Select(chunk => string.Join(" ", chunk)));
-        }
+        var sentences = Enumerable.Range(0, sentenceCount)
+            .Select(_ => Sentences[_random.Next(Sentences.Length)])
+            .ToList();
 
-        return string.Join(" ", selectedSentences);
+        return responseType == 2
+            ? string.Join("\n\n", sentences.Chunk(3).Select(chunk => string.Join(" ", chunk)))
+            : string.Join(" ", sentences);
     }
 }
