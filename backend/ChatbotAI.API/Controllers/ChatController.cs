@@ -1,3 +1,4 @@
+using ChatbotAI.API.Contracts.Chat;
 using ChatbotAI.Application.Commands.Chat.RateAiMessage;
 using ChatbotAI.Application.Interfaces;
 using ChatbotAI.Application.Queries.StreamAiResponse;
@@ -18,17 +19,16 @@ public class ChatController : ControllerBase
         _mediator = mediator;
     }
     
-    [HttpGet("stream")]
+    [HttpPost("stream")]
     public async Task StreamAiResponse(
-        [FromQuery] string userMessage,
-        [FromQuery] Guid? conversationId,
+        [FromBody] StreamAiRequest request,
         CancellationToken cancellationToken)
     {
         Response.StatusCode = 200;
         Response.ContentType = "text/plain";
 
         var stream = await _mediator.Send(
-            new StreamAiResponseQuery(userMessage, conversationId),
+            new StreamAiResponseQuery(request.Message, request.ConversationId),
             cancellationToken);
 
         await foreach (var chunk in stream.WithCancellation(cancellationToken))
